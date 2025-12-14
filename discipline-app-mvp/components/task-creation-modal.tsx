@@ -3,11 +3,14 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { X, Clock, DollarSign, BookOpen, Briefcase, Heart, Home, Lightbulb } from "lucide-react"
+import { CharitySelector } from "./charity-selector"
+import { CHARITIES } from "@/lib/charities"
 
 interface TaskCreationModalProps {
   onClose: () => void
   onStart: (taskData: any) => void
   freeSessionsLeft: number
+  walletConnected: boolean
 }
 
 const CATEGORIES = [
@@ -26,23 +29,40 @@ const DURATIONS = [
   { value: 120, label: "2 hours" },
 ]
 
-export function TaskCreationModal({ onClose, onStart, freeSessionsLeft }: TaskCreationModalProps) {
+export function TaskCreationModal({ onClose, onStart, freeSessionsLeft, walletConnected }: TaskCreationModalProps) {
   const [taskName, setTaskName] = useState("")
   const [category, setCategory] = useState("study")
   const [duration, setDuration] = useState(25)
   const [mode, setMode] = useState<"free" | "stake">("free")
-  const [stakeAmount, setStakeAmount] = useState(5)
+  const [stakeAmount, setStakeAmount] = useState(1)
+  const [selectedCharity, setSelectedCharity] = useState(CHARITIES[0].id)
+  const [isCreating, setIsCreating] = useState(false)
 
-  const handleStart = () => {
+  const handleStart = async () => {
     if (!taskName.trim()) return
+    
+    if (mode === "stake" && !walletConnected) {
+      alert("Please connect your wallet to use stake mode!")
+      return
+    }
 
-    onStart({
-      name: taskName,
-      category,
-      duration,
-      mode,
-      stakeAmount: mode === "stake" ? stakeAmount : 0,
-    })
+    setIsCreating(true)
+
+    try {
+      await onStart({
+        name: taskName,
+        category,
+        duration,
+        mode,
+        stakeAmount: mode === "stake" ? stakeAmount : 0,
+        charityId: selectedCharity,
+      })
+    } catch (error) {
+      console.error("Failed to start task:", error)
+      alert("Failed to start task. Please try again.")
+    } finally {
+      setIsCreating(false)
+    }
   }
 
   return (
@@ -127,43 +147,56 @@ export function TaskCreationModal({ onClose, onStart, freeSessionsLeft }: TaskCr
 
             <button
               onClick={() => setMode("stake")}
-              className={`border-4 border-foreground p-4 text-left transition-colors ${
-                mode === "stake" ? "bg-destructive text-destructive-foreground" : "bg-card hover:bg-muted"
+              disabled={!walletConnected}
+              className={`border-4 border-foreground p-4 text-left transition-colors disabled:opacity-50 ${
+                mode === "stake" ? "bg-primary text-primary-foreground" : "bg-card hover:bg-muted"
               }`}
             >
               <div className="mb-1 flex items-center gap-2">
                 <DollarSign className="h-5 w-5" />
                 <span className="font-mono font-black uppercase">Stake Mode</span>
               </div>
-              <p className="font-mono text-xs font-bold opacity-90">Risk money for max accountability</p>
+              <p className="font-mono text-xs font-bold opacity-90">Put money on the line</p>
             </button>
           </div>
         </div>
 
         {/* Stake Amount (if stake mode) */}
         {mode === "stake" && (
-          <div className="mb-6">
-            <label className="mb-2 block font-mono text-sm font-bold uppercase">Stake Amount ($)</label>
-            <input
-              type="number"
-              min="1"
-              value={stakeAmount}
-              onChange={(e) => setStakeAmount(Number(e.target.value))}
-              className="w-full border-4 border-foreground bg-card px-4 py-3 font-mono text-lg font-bold focus:outline-none focus:ring-4 focus:ring-ring"
-            />
-            <p className="mt-2 font-mono text-xs font-bold text-muted-foreground">
-              Fail → Donated to charity | Success → 100% returned
-            </p>
-          </div>
+          <>
+            <div className="mb-6">
+              <label className="mb-2 block font-mono text-sm font-bold uppercase">Stake Amount (IOTA)</label>
+              <input
+                type="number"
+                min="0.1"
+                step="0.1"
+                value={stakeAmount}
+                onChange={(e) => setStakeAmount(Number(e.target.value))}
+                className="w-full border-4 border-foreground bg-card px-4 py-3 font-mono text-lg font-bold focus:outline-none focus:ring-4 focus:ring-ring"
+              />
+              <p className="mt-2 font-mono text-xs font-bold text-muted-foreground">
+                Fail → Donated to charity | Success → 100% returned
+              </p>
+              {!walletConnected && (
+                <p className="mt-2 font-mono text-xs font-bold text-destructive">
+                  ⚠️ Connect wallet to use stake mode
+                </p>
+              )}
+            </div>
+
+            <div className="mb-6">
+              <CharitySelector selectedCharityId={selectedCharity} onSelect={setSelectedCharity} />
+            </div>
+          </>
         )}
 
         {/* Start Button */}
         <Button
           onClick={handleStart}
-          disabled={!taskName.trim()}
+          disabled={!taskName.trim() || isCreating || (mode === "stake" && !walletConnected)}
           className="h-auto w-full border-4 border-foreground bg-primary py-4 font-mono text-xl font-black uppercase text-primary-foreground hover:translate-x-1 hover:translate-y-1 hover:bg-primary disabled:opacity-50 brutal-shadow transition-transform"
         >
-          Start Task
+          {isCreating ? "Creating Task..." : "Start Task"}
         </Button>
       </div>
     </div>
