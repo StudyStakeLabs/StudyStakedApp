@@ -23,7 +23,10 @@ export interface TaskRecord {
   endTime?: number
   completed: boolean
   proofSubmitted: boolean
+
   txHash?: string
+  proofHash?: string
+  objectId?: string
 }
 
 export interface WalletData {
@@ -41,10 +44,10 @@ const STORAGE_KEYS = {
 // User Stats
 export const getUserStats = (): UserStats => {
   if (typeof window === "undefined") return getDefaultStats()
-  
+
   const stored = localStorage.getItem(STORAGE_KEYS.USER_STATS)
   if (!stored) return getDefaultStats()
-  
+
   try {
     return JSON.parse(stored)
   } catch {
@@ -57,7 +60,7 @@ export const saveUserStats = (stats: UserStats) => {
   localStorage.setItem(STORAGE_KEYS.USER_STATS, JSON.stringify(stats))
 }
 
-const getDefaultStats = (): UserStats => ({
+export const getDefaultStats = (): UserStats => ({
   freeSessionsLeft: 3,
   streakCount: 0,
   disciplineScore: 0,
@@ -68,10 +71,10 @@ const getDefaultStats = (): UserStats => ({
 // Task History
 export const getTaskHistory = (): TaskRecord[] => {
   if (typeof window === "undefined") return []
-  
+
   const stored = localStorage.getItem(STORAGE_KEYS.TASK_HISTORY)
   if (!stored) return []
-  
+
   try {
     return JSON.parse(stored)
   } catch {
@@ -97,10 +100,10 @@ export const addTaskToHistory = (task: TaskRecord) => {
 // Active Task
 export const getActiveTask = (): TaskRecord | null => {
   if (typeof window === "undefined") return null
-  
+
   const stored = localStorage.getItem(STORAGE_KEYS.ACTIVE_TASK)
   if (!stored) return null
-  
+
   try {
     return JSON.parse(stored)
   } catch {
@@ -110,7 +113,7 @@ export const getActiveTask = (): TaskRecord | null => {
 
 export const saveActiveTask = (task: TaskRecord | null) => {
   if (typeof window === "undefined") return
-  
+
   if (task === null) {
     localStorage.removeItem(STORAGE_KEYS.ACTIVE_TASK)
   } else {
@@ -121,10 +124,10 @@ export const saveActiveTask = (task: TaskRecord | null) => {
 // Wallet Data
 export const getWalletData = (): WalletData | null => {
   if (typeof window === "undefined") return null
-  
+
   const stored = localStorage.getItem(STORAGE_KEYS.WALLET_DATA)
   if (!stored) return null
-  
+
   try {
     return JSON.parse(stored)
   } catch {
@@ -134,7 +137,7 @@ export const getWalletData = (): WalletData | null => {
 
 export const saveWalletData = (data: WalletData | null) => {
   if (typeof window === "undefined") return
-  
+
   if (data === null) {
     localStorage.removeItem(STORAGE_KEYS.WALLET_DATA)
   } else {
@@ -147,7 +150,7 @@ export const updateStatsOnTaskComplete = (stakeAmount?: number) => {
   const stats = getUserStats()
   const today = new Date().toDateString()
   const lastActive = new Date(stats.lastActiveDate).toDateString()
-  
+
   // Update streak
   if (today === lastActive) {
     // Same day, no streak change
@@ -162,15 +165,15 @@ export const updateStatsOnTaskComplete = (stakeAmount?: number) => {
       stats.streakCount = 1
     }
   }
-  
+
   // Update discipline score
   const basePoints = 10
   const stakeBonus = stakeAmount ? Math.floor(stakeAmount * 2) : 0
   stats.disciplineScore += basePoints + stakeBonus
-  
+
   stats.totalCompleted += 1
   stats.lastActiveDate = new Date().toISOString()
-  
+
   saveUserStats(stats)
 }
 
@@ -179,7 +182,7 @@ export const checkAndResetFreeSessions = () => {
   const stats = getUserStats()
   const today = new Date().toDateString()
   const lastActive = new Date(stats.lastActiveDate).toDateString()
-  
+
   if (today !== lastActive) {
     stats.freeSessionsLeft = 3
     stats.lastActiveDate = new Date().toISOString()

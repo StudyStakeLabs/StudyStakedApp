@@ -40,7 +40,7 @@ export function TaskCreationModal({ onClose, onStart, freeSessionsLeft, walletCo
 
   const handleStart = async () => {
     if (!taskName.trim()) return
-    
+
     if (mode === "stake" && !walletConnected) {
       alert("Please connect your wallet to use stake mode!")
       return
@@ -98,9 +98,8 @@ export function TaskCreationModal({ onClose, onStart, freeSessionsLeft, walletCo
                 <button
                   key={cat.id}
                   onClick={() => setCategory(cat.id)}
-                  className={`border-3 border-foreground p-3 font-mono text-xs font-bold uppercase transition-colors ${
-                    category === cat.id ? "bg-primary text-primary-foreground" : "bg-card hover:bg-muted"
-                  }`}
+                  className={`border-3 border-foreground p-3 font-mono text-xs font-bold uppercase transition-colors ${category === cat.id ? "bg-primary text-primary-foreground" : "bg-card hover:bg-muted"
+                    }`}
                 >
                   <Icon className="mx-auto mb-1 h-5 w-5" />
                   {cat.label}
@@ -118,9 +117,8 @@ export function TaskCreationModal({ onClose, onStart, freeSessionsLeft, walletCo
               <button
                 key={d.value}
                 onClick={() => setDuration(d.value)}
-                className={`border-3 border-foreground px-3 py-2 font-mono text-sm font-bold transition-colors ${
-                  duration === d.value ? "bg-secondary text-secondary-foreground" : "bg-card hover:bg-muted"
-                }`}
+                className={`border-3 border-foreground px-3 py-2 font-mono text-sm font-bold transition-colors ${duration === d.value ? "bg-secondary text-secondary-foreground" : "bg-card hover:bg-muted"
+                  }`}
               >
                 {d.label}
               </button>
@@ -134,9 +132,8 @@ export function TaskCreationModal({ onClose, onStart, freeSessionsLeft, walletCo
           <div className="grid gap-3 sm:grid-cols-2">
             <button
               onClick={() => setMode("free")}
-              className={`border-4 border-foreground p-4 text-left transition-colors ${
-                mode === "free" ? "bg-accent text-accent-foreground" : "bg-card hover:bg-muted"
-              }`}
+              className={`border-4 border-foreground p-4 text-left transition-colors ${mode === "free" ? "bg-accent text-accent-foreground" : "bg-card hover:bg-muted"
+                }`}
             >
               <div className="mb-1 flex items-center gap-2">
                 <Clock className="h-5 w-5" />
@@ -148,9 +145,8 @@ export function TaskCreationModal({ onClose, onStart, freeSessionsLeft, walletCo
             <button
               onClick={() => setMode("stake")}
               disabled={!walletConnected}
-              className={`border-4 border-foreground p-4 text-left transition-colors disabled:opacity-50 ${
-                mode === "stake" ? "bg-primary text-primary-foreground" : "bg-card hover:bg-muted"
-              }`}
+              className={`border-4 border-foreground p-4 text-left transition-colors disabled:opacity-50 ${mode === "stake" ? "bg-primary text-primary-foreground" : "bg-card hover:bg-muted"
+                }`}
             >
               <div className="mb-1 flex items-center gap-2">
                 <DollarSign className="h-5 w-5" />
@@ -177,11 +173,6 @@ export function TaskCreationModal({ onClose, onStart, freeSessionsLeft, walletCo
               <p className="mt-2 font-mono text-xs font-bold text-muted-foreground">
                 Fail → Donated to charity | Success → 100% returned
               </p>
-              {!walletConnected && (
-                <p className="mt-2 font-mono text-xs font-bold text-destructive">
-                  ⚠️ Connect wallet to use stake mode
-                </p>
-              )}
             </div>
 
             <div className="mb-6">
@@ -190,13 +181,22 @@ export function TaskCreationModal({ onClose, onStart, freeSessionsLeft, walletCo
           </>
         )}
 
+        {/* Wallet Warning */}
+        {!walletConnected && (
+          <div className="mb-6">
+            <p className="text-center font-mono text-xs font-bold text-destructive animate-pulse">
+              ⚠️ Connect wallet to start task (Required for on-chain recording)
+            </p>
+          </div>
+        )}
+
         {/* Start Button */}
         <Button
           onClick={handleStart}
-          disabled={!taskName.trim() || isCreating || (mode === "stake" && !walletConnected)}
+          disabled={!taskName.trim() || isCreating || !walletConnected}
           className="h-auto w-full border-4 border-foreground bg-primary py-4 font-mono text-xl font-black uppercase text-primary-foreground hover:translate-x-1 hover:translate-y-1 hover:bg-primary disabled:opacity-50 brutal-shadow transition-transform"
         >
-          {isCreating ? "Creating Task..." : "Start Task"}
+          {!walletConnected ? "Connect Wallet First" : (isCreating ? "Creating Task..." : "Start Task")}
         </Button>
       </div>
     </div>

@@ -210,24 +210,27 @@ export function getExplorerUrl(digest: string): string {
 /**
  * Format transaction details for display in confirmation modal
  */
-export function formatTransactionDetails(tx: Transaction, type: "stake" | "complete" | "forfeit") {
+export function formatTransactionDetails(type: "stake" | "complete" | "forfeit", taskName: string) {
   const details: { label: string; value: string }[] = []
 
   if (type === "stake") {
     details.push(
       { label: "Action", value: "Stake Task" },
+      { label: "Task", value: taskName },
       { label: "Function", value: "study_stake::stake_task" },
       { label: "Package", value: formatTxHash(PACKAGE_ID) }
     )
   } else if (type === "complete") {
     details.push(
       { label: "Action", value: "Complete Task" },
+      { label: "Task", value: taskName },
       { label: "Function", value: "study_stake::complete_task" },
       { label: "Package", value: formatTxHash(PACKAGE_ID) }
     )
   } else if (type === "forfeit") {
     details.push(
       { label: "Action", value: "Forfeit Task" },
+      { label: "Task", value: taskName },
       { label: "Function", value: "study_stake::forfeit_task" },
       { label: "Package", value: formatTxHash(PACKAGE_ID) }
     )
