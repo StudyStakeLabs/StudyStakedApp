@@ -83,7 +83,7 @@ Create a `.env.local` file in `discipline-app-mvp/`:
 ```env
 NEXT_PUBLIC_IOTA_NETWORK=testnet
 NEXT_PUBLIC_IOTA_RPC_URL=https://api.testnet.iota.org:443
-NEXT_PUBLIC_CONTRACT_PACKAGE_ID=<your_deployed_package_id>
+NEXT_PUBLIC_PACKAGE_ID=0xf67568359be5785632dbc0e39c1381bb80b1642bf0bb5ae836b77de6a24e1b47
 ```
 
 **Note**: Update the charity wallet addresses in `lib/charities.ts` with real IOTA addresses after deployment.

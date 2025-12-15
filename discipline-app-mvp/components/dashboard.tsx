@@ -33,6 +33,7 @@ import { getCharityById } from "@/lib/charities"
 
 import { NftRewardCard } from "./nft-reward-card"
 
+
 export function Dashboard() {
   const [showTaskModal, setShowTaskModal] = useState(false)
   const [activeTask, setActiveTask] = useState<TaskRecord | null>(null)
@@ -108,6 +109,13 @@ export function Dashboard() {
     // Default config for tasks
     const charity = taskData.charityId ? getCharityById(taskData.charityId) : getCharityById("khan-academy")!
 
+    // Safety check for charity
+    if (!charity) {
+      console.error("No charity found for id:", taskData.charityId)
+      alert("System Error: Invalid Charity")
+      return
+    }
+
     const newTask: TaskRecord = {
       id: taskId,
       name: taskData.name,
@@ -129,13 +137,6 @@ export function Dashboard() {
 
     // Show transaction confirmation modal for BOTH modes
     // Free mode still needs a transaction to record the task on-chain
-
-    // Safety check for charity
-    if (!charity) {
-      console.error("No charity found for id:", taskData.charityId)
-      alert("System Error: Invalid Charity")
-      return
-    }
 
     const details = formatTransactionDetails(
       'stake',
