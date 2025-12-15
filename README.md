@@ -2,8 +2,7 @@
 
 **Study Stake** is a hybrid productivity system that combines time-commitment tracking with financial stakes on the IOTA blockchain to enforce discipline and build accountability.
 
-![Uploading image.png…]()
-
+![image](image.png)
 
 
 ## 🎯 Features
