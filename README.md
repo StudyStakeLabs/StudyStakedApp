@@ -58,7 +58,7 @@
 
 ### Smart Contract
 - **Platform**: IOTA Move
-- **Language**: Move (not Solidity!)
+- **Language**: Move 
 - **Network**: IOTA Testnet (for development)
 - **Functions**:
   - `stake_task`: Create a staked task commitment
@@ -71,6 +71,65 @@ The Move contract uses an object-centric model where each Task is an owned objec
 - Staker must own the Task object to complete or forfeit it
 - No global mapping - each task is a separate on-chain object
 - Events emitted for all major actions (TaskStaked, TaskCompleted, TaskForfeited)
+
+## Architecture Diagrams
+
+### Sequence Diagram (Mermaid)
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant F as Frontend
+    participant A as API Route
+    participant IC as IOTA Client
+    participant SC as Smart Contract
+    participant LS as Local Storage
+
+    U->>F: Connect Wallet
+    F->>IC: Use @iota/dapp-kit
+    IC->>LS: Save address
+
+    U->>F: Create Task
+    F->>IC: createStakeTaskTransaction
+    IC->>SC: stake_task (tx signed)
+    SC-->>SC: Emit TaskStaked
+    F->>LS: Save task locally
+
+    U->>F: Complete Task
+    F->>IC: createCompleteTaskTransaction
+    IC->>SC: complete_task
+    SC-->>SC: Emit TaskCompleted
+    F->>LS: Update stats
+
+    U->>F: View Leaderboard
+    F->>A: GET /api/leaderboard
+    A->>IC: queryEvents (TaskCompleted/Forfeited)
+    IC->>SC: Fetch events
+    SC-->>A: Return events
+    A->>A: Aggregate points
+    A-->>F: Return leaderboard
+```
+
+### Text-Based Diagram
+
+```
+User Flow Overview:
+
+1. Wallet Connection:
+   User --> Frontend --> IOTA Dapp Kit --> Local Storage (address saved)
+
+2. Task Creation:
+   User --> Frontend --> IOTA Client (build stake tx) --> Smart Contract (stake_task)
+   Smart Contract --> Emit TaskStaked Event --> Local Storage (task saved)
+
+3. Task Completion:
+   User --> Frontend --> IOTA Client (build complete tx) --> Smart Contract (complete_task)
+   Smart Contract --> Emit TaskCompleted Event --> Local Storage (stats updated)
+
+4. Leaderboard View:
+   User --> Frontend --> API Route --> IOTA Client (query events) --> Smart Contract
+   Smart Contract --> API Route (events) --> Aggregate --> Frontend (leaderboard)
+```
 
 ## 📦 Installation
 
