@@ -131,6 +131,66 @@ User Flow Overview:
    Smart Contract --> API Route (events) --> Aggregate --> Frontend (leaderboard)
 ```
 
+### Flowchart (Mermaid)
+
+```mermaid
+flowchart TD
+    U[User] -->|Interacts| F[Frontend<br/>Next.js + React]
+    F -->|Wallet Connection| IC[IOTA Client<br/>@iota/dapp-kit]
+    F -->|Task Management| IC
+    F -->|Leaderboard Fetch| A[API Route<br/>/api/leaderboard]
+    A -->|Query Events| IC
+    IC -->|Transactions| SC[Smart Contract<br/>IOTA Move]
+    IC -->|Read Events| SC
+    SC -->|Emit Events| A
+    F -->|Persist Data| LS[Local Storage<br/>Stats & Tasks]
+    SC -->|Events| LS
+```
+
+### Use Case Diagram (Text-Based)
+
+```
+Actors:
+- User (Primary Actor)
+
+Use Cases:
+- Connect Wallet: User connects IOTA wallet to access staking features
+- Create Task: User creates a new task with duration and charity selection
+- Stake IOTA: User stakes IOTA tokens on a task for accountability
+- Complete Task: User marks task as completed to retrieve stake
+- Forfeit Task: User forfeits task, sending stake to selected charity
+- View Stats: User views personal progress, streaks, and history
+- View Leaderboard: User views global rankings based on completed tasks
+
+Relationships:
+- User --> Connect Wallet (includes)
+- User --> Create Task (includes)
+- Create Task --> Stake IOTA (extends, optional)
+- User --> Complete Task (or Forfeit Task)
+- User --> View Stats
+- User --> View Leaderboard
+```
+
+### Use Case Diagram (Mermaid)
+
+```mermaid
+flowchart TD
+    U(("User"))
+    U --> UC1["Connect Wallet<br/>Connect IOTA wallet"]
+    U --> UC2["Create Task<br/>Set duration & charity"]
+    UC2 --> UC3["Stake IOTA<br/>Lock tokens for accountability"]
+    U --> UC4["Complete Task<br/>Retrieve stake"]
+    U --> UC5["Forfeit Task<br/>Donate to charity"]
+    U --> UC6["View Stats<br/>Check progress & streaks"]
+    U --> UC7["View Leaderboard<br/>See global rankings"]
+    
+    UC1 -.-> UC2
+    UC2 -.-> UC3
+    UC3 -.-> UC4
+    UC3 -.-> UC5
+    UC6 -.-> UC7
+```
+
 ## 📦 Installation
 
 ### Prerequisites
