@@ -33,6 +33,14 @@
   - Daily free session reset
   - Future: Direct blockchain explorer integration with TanStack Query
 
+- **Real-Time Leaderboard**: Competitive rankings based on on-chain performance
+  - Automatic indexing of Move events from IOTA blockchain
+  - Points awarded for completed tasks based on stake amount
+  - Top 10 rankings display with trophy badges
+  - Auto-refreshes every 30 seconds for live updates
+  - Shows total participants, tasks completed, and total IOTA staked
+  - Caching for optimal API performance
+
 - **Neobrutalism UI**: Bold, accessible design with high contrast and clear visual hierarchy
   - Dark mode support
   - Responsive layout for mobile and desktop
@@ -45,7 +53,7 @@
 - **Styling**: Tailwind CSS 4.1 with custom neobrutalism design system
 - **UI Components**: Radix UI primitives with custom styling
 - **State Management**: React hooks with localStorage persistence
-- **Blockchain**: IOTA SDK (@iota/iota.js, @iota/sdk) for wallet and contract interaction
+- **Blockchain**: IOTA SDK (@iota/iota.js, @iota/iota-sdk) for wallet and contract interaction
 - **Forms**: react-hook-form with Zod validation
 
 ### Smart Contract
@@ -208,6 +216,21 @@ Click "Connect Wallet" in the dashboard header to link your IOTA wallet.
   - Stake mode: +10 points per IOTA staked
 - **Task History**: View last 50 completed/forfeited tasks with details
 
+### 5. View the Leaderboard
+The real-time leaderboard shows the top performers based on on-chain task completions:
+- **Top 10 Rankings**: Displays the highest-scoring users with trophy badges (🥇🥈🥉)
+- **Your Rank**: Shows your current position if you're not in the top 10
+- **Points System**: Earn points equal to your staked IOTA amount when completing tasks
+- **Live Updates**: Leaderboard auto-refreshes every 30 seconds
+- **Manual Refresh**: Click the "Refresh" button to update rankings instantly
+- **Participant Stats**: View total participants, tasks completed, and total IOTA staked
+
+**How Points Are Calculated:**
+- Only completed tasks earn points (forfeited tasks = 0 points)
+- Points = staked amount in nano IOTA (e.g., 1 IOTA stake = 1,000,000,000 points)
+- Task completions are indexed from Move events on the blockchain
+- Rankings update automatically as users complete tasks
+
 ## 🔐 Security Considerations
 
 - Smart contracts are **non-upgradeable** once deployed to mainnet
@@ -294,10 +317,11 @@ public struct Task has key, store {
 - [ ] Gas estimation and optimization
 
 ### Phase 3: Enhanced Features
+- [x] Real-time leaderboard with Move event indexing
 - [ ] Task proof verification (AI/community voting)
 - [ ] Photo upload for proof
 - [ ] Camera tracking (optional accountability mode)
-- [ ] Social features (leaderboards, friend challenges)
+- [ ] Friend challenges and social features
 - [ ] Achievement system and badges
 - [ ] Weekly/monthly stats dashboard
 

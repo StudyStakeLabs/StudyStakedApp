@@ -32,6 +32,7 @@ import {
 import { getCharityById } from "@/lib/charities"
 
 import { NftRewardCard } from "./nft-reward-card"
+import { Leaderboard } from "./leaderboard"
 
 
 export function Dashboard() {
@@ -426,6 +427,11 @@ export function Dashboard() {
 
             {/* Task History */}
             <TaskHistory />
+
+            {/* Leaderboard */}
+            <div className="mt-8">
+              <Leaderboard />
+            </div>
           </>
         )}
 
